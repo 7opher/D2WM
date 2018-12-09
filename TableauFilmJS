@@ -1,0 +1,176 @@
+let listeFilms = [
+  {
+    titre: "Flash",
+    annee: 2018,
+    realisateur : "Bebert"
+  },
+  {
+    titre: "Thor",
+    annee: 2015,
+    realisateur : "Morice"
+  },
+  {
+    titre: "Les gendarmes",
+    annee: 1985,
+    realisateur : "Albert"
+  },
+  {
+    titre: "Bidasse",
+    annee: 1996,
+    realisateur : "Robert"
+  }
+];
+
+window.onload = function(){
+  afficherListe()
+}
+
+var tbodyElt = document.querySelector('tbody');
+var divInfo = document.getElementById('infoAjout');
+
+// Afficher les films dans le tableau
+function afficherListe(){
+  tbodyElt.innerHTML = '';
+  // Parcourir la listeFilms
+  for (var i = 0; i < listeFilms.length; i++) {
+    // CrÃ©e les Ã©lÃ©ments pour mon tableau
+    let trElt = document.createElement('tr'); // <tr></tr>
+    let tdEltTitre = document.createElement('td'); // <td></td>
+    let tdEltAnnee = document.createElement('td'); // <td></td>
+    let tdEltReal = document.createElement('td'); // <td></td>
+
+    // AffectÃ© les valeurs de ma liste dans mon tableau
+    tdEltTitre.textContent = listeFilms[i].titre; // <td> Titre </td>
+    tdEltAnnee.textContent = listeFilms[i].annee; // <td> Annee </td>
+    tdEltReal.textContent = listeFilms[i].realisateur; // <td> Realisateur </td>
+
+    trElt.appendChild(tdEltTitre); // <tr>
+    trElt.appendChild(tdEltAnnee); //     3 <td></td>
+    trElt.appendChild(tdEltReal);  //</tr>
+
+    tbodyElt.appendChild(trElt); // <tbody> <tr> 3<td></tr></tbody>
+   }
+}
+
+
+
+// Ajouter le formulaire d'ajout
+  // RÃ©cupÃ©rer la div d'ajout
+  let divAjout = document.getElementById('ajout');
+
+  // CrÃ©e un bouton Ajouter
+  let btnAjouter = document.createElement('button');
+  btnAjouter.classList.add("btn");
+  btnAjouter.classList.add("btn-primary");
+  btnAjouter.textContent = 'Ajouter';
+
+  // CrÃ©e un Ã©venement sur le click
+  btnAjouter.addEventListener('click', function(){
+    // Afficher un formulaire pour ajouter un film
+      // CrÃ©e un formulaire
+      let formElt = document.createElement('form');
+      // CrÃ©e 3 input et un bouton submit
+      let txtTitreElt = document.createElement('input');
+      txtTitreElt.placeholder = 'Entrer un titre';
+      txtTitreElt.required = 'true';
+
+      let txtAnneeElt = document.createElement('input');
+      txtAnneeElt.placeholder = 'Entrer une annÃ©e';
+      txtAnneeElt.required = 'true';
+
+      let txtRealElt = document.createElement('input');
+      txtRealElt.placeholder = 'Entrer un rÃ©alisateur';
+      txtRealElt.required = 'true';
+
+      let btnEnvoyerElt = document.createElement('input');
+      btnEnvoyerElt.type = 'submit';
+      btnEnvoyerElt.value = 'Envoyer';
+
+
+      // Evenement sur le formulaire submit
+      formElt.addEventListener('submit', function(e){
+        // RÃ©cupere les valeurs saisi
+        let titre = txtTitreElt.value;
+        let annee = txtAnneeElt.value;
+        let realisateur = txtRealElt.value;
+
+        // DÃ©finition d'une regex pour le format de la date
+        let regex = /^[0-9]{4}$/; // 1995 9856
+        let pInfo = document.createElement('p');
+        pInfo.classList.add('alert');
+        let classInfo = '';
+        let messageInfo = '';
+        // VÃ©rifier l'annÃ©e par rapport a la regex
+        // Si date = ok
+        if (regex.test(annee)) {
+          // Ajouter le film dans le tableau
+          listeFilms.push({titre, annee, realisateur });
+          // Afficher un message d'ajout
+          messageInfo = "Film " + titre + " a bien Ã©tÃ© ajouter";
+          classInfo = "alert\-success";
+
+          // RÃ©-affiche le bouton d'ajout
+          divAjout.replaceChild(btnAjouter, formElt);
+          // Recharge la liste dans le tableau
+          afficherListe();
+        }
+          // Sinon
+        else{
+            // Afficher un message d'erreur
+            messageInfo =  "Erreur : Format de date incorrect";
+            classInfo = "alert\-danger";
+        }
+
+        pInfo.classList.add(classInfo)
+        pInfo.textContent = messageInfo;
+        divInfo.appendChild(pInfo);
+
+        // Cache l'info bulle au bout de 3 sec
+        setTimeout(function(){
+          divInfo.removeChild(pInfo);
+        },
+        3000);
+
+        // Annuler l'Ã©vÃ©nement submit
+        e.preventDefault();
+      });
+
+    // Affecter nos Ã©lÃ©ment enfants a notre formElt
+    formElt.appendChild(txtTitreElt);
+    formElt.appendChild(txtAnneeElt);
+    formElt.appendChild(txtRealElt);
+    formElt.appendChild(btnEnvoyerElt);
+
+    divAjout.replaceChild(formElt, btnAjouter);
+  })
+
+  // Ajouter les balises enfants aux parents
+  divAjout.appendChild(btnAjouter);
+
+
+// Filtre
+  // RÃ©cupÃ©rer la valeur selectionnÃ©
+  let selectElt = document.getElementById('trier');
+
+  selectElt.addEventListener('change', function(){
+    let choixTri = selectElt.value;
+    // trier selon le filtre
+    if(choixTri === "titre"){
+      listeFilms.sort(function (a, b) {
+        if (a.titre < b.titre)
+           return -1;
+        if (a.titre > b.titre)
+           return 1;
+        // a doit Ãªtre Ã©gal Ã  b
+        return 0;
+      });
+      afficherListe();
+    }else if(choixTri === "date"){
+      listeFilms.sort(function(a, b){
+        return a.annee - b.annee;
+      })
+      afficherListe();
+    }else{
+      afficherListe();
+    }
+  })
